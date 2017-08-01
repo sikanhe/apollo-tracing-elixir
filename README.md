@@ -30,6 +30,15 @@ def MyApp.Schema do
 end
 ```
 
+Note that you don't have to add tracing to all fields in your schema, like we did above. You could selectively add tracing information to the fields of your choice:
+
+```elixir
+field :selected_field, :string do
+  middleware ApolloTracing.Middleware # Has to be the first middleware
+  resolve fn _, _ -> {:ok, "this field is now added to be traced"} end
+end
+```
+
 After adding the middleware, then you want to  modify Absinthe pipeline to ApolloTracing's custom pipeline before executing queries.
 
 ## Modifying pipeline with Plug
