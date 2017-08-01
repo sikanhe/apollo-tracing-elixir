@@ -2,7 +2,7 @@
 
 ## Installation
 
-Add :apollo_tracing to your deps
+Add `:apollo_tracing` to your deps
 ```elixir
 def deps do
   [
@@ -30,19 +30,30 @@ def MyApp.Schema do
 end
 ```
 
-After adding the middleware, then you want to add ApolloTracing's custom pipeline
-to Absinthe before executing queries.
+After adding the middleware, then you want to  modify Absinthe pipeline to ApolloTracing's custom pipeline before executing queries.
 
-## Usage with Plug
+## Modifying pipeline with Plug
 
-To add the pipeline to your Absinthe.Plug endpoint, you can use the :pipeline option:
+To add the pipeline to your Absinthe.Plug endpoint, you can simpley use the :pipeline option:
+
 ```elixir
 forward "/graphql", Absinthe.Plug,
   schema: MyApp.Schema,
   pipeline: {ApolloTracing.Pipeline, :plug}
 ```
 
-### Usage without plug
+If you have your own pipeline function, you can use
+ApolloTracing.Pipeline.add_phases(pipeline) function to added the phases to your pipeline before passing it to Absinthe.Plug.
+
+```elixir
+def my_pipeline_creator(config, opts) do
+  config.schema_mod
+  |> add_my_phases()
+  |> ApolloTracing.Pipeline.add_phases()
+end
+```
+
+### Adding pipeline to `Absinthe.run`
 When you want to just call run a query with tracing, but without going through a Plug endpoint,
 you can build the pipeline with `ApolloTracing.Pipeline.default(schema, opts)`
 and pass that to `Absinthe.Pipeline.run`

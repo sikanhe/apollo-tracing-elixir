@@ -19,7 +19,7 @@ defmodule ApolloTracing.Pipeline do
     end
   end
 
-  defp add_phases(pipeline) do
+  def add_phases(pipeline) do
     pipeline
     |> Absinthe.Pipeline.insert_after(
       Absinthe.Phase.Blueprint,
