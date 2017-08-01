@@ -64,4 +64,8 @@ defmodule ApolloTracingTest do
       assert resolver.duration
     end
   end
+
+  test "should raise when trying to use Plug pipeline without plug loaded" do
+    assert_raise RuntimeError, fn -> ApolloTracing.Pipeline.plug(TestSchema) end
+  end
 end
