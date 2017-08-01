@@ -1,4 +1,13 @@
-# ApolloTracing
+# ApolloTracing (for Elixir)
+
+This package is used to collect and expose trace data in the Apollo Tracing format.
+
+It relies on instrumenting a GraphQL schema to collect resolver timings, and exposes trace data for an individual request under extensions as part of the GraphQL response.
+
+The extension format is work in progress, and we're collaborating with others in the GraphQL community to make it broadly available, and to build awesome tools on top of it.
+
+One use of Apollo Tracing is to add support for [Apollo Optics](https://www.apollodata.com/optics/) to more GraphQL servers.
+
 
 ## Installation
 
