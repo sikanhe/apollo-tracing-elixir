@@ -11,7 +11,9 @@ defmodule ApolloTracing.Middleware do
     %{acc: %{
       apollo_tracing_start_time: start_mono_time,
       apollo_tracing: %Schema{
-        execution: %Execution{resolvers: resolvers_so_far}
+        execution: %Execution{
+          resolvers: resolvers_so_far
+        }
       }
     }} = res
 
@@ -45,7 +47,7 @@ defmodule ApolloTracing.Middleware do
 
     updated_resolver = %Resolver{resolver |
       duration: System.monotonic_time() - start_time
-    }
+    } |> Map.from_struct()
 
     put_in(res.acc.apollo_tracing.execution.resolvers, [updated_resolver | prev_resolvers])
   end
