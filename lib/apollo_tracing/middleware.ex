@@ -20,10 +20,9 @@ defmodule ApolloTracing.Middleware do
 
     now = get_time()
     start_offset = now - start_mono_time
-    [_nil | path] = res.path |> Enum.map(& &1.name) |> Enum.reverse()
 
     resolver = %Resolver{
-      path: path,
+      path: Absinthe.Resolution.path(res),
       parent_type: res.parent_type.name,
       field_name: res.definition.name,
       return_type: res.definition.schema_node.type,

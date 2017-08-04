@@ -64,10 +64,11 @@ If you have your own pipeline function, you can use
 ApolloTracing.Pipeline.add_phases(pipeline) function to added the phases to your pipeline before passing it to Absinthe.Plug.
 
 ```elixir
-def my_pipeline_creator(config, opts) do
+def my_pipeline_creator(config, pipeline_opts) do
   config.schema_mod
-  |> add_my_phases()
-  |> ApolloTracing.Pipeline.add_phases()
+  |> Absinthe.Pipeline.for_document(pipeline_opts)
+  |> add_my_phases() # w.e your custom phases are
+  |> ApolloTracing.Pipeline.add_phases() # Add apollo at the end
 end
 ```
 
