@@ -6,27 +6,22 @@ defmodule ApolloTracing.Middleware do
   alias ApolloTracing.{Schema, Schema.Execution, Schema.Execution.Resolver}
   alias Absinthe.Resolution
 
-  defp get_time,
-    do: System.monotonic_time(:nanosecond)
-
   # Called before resolving
   def call(%Resolution{state: :unresolved} = res, _config) do
     %{acc: %{
+      apollo_tracing_start_time: start_mono_time,
       apollo_tracing: %Schema{
-        start_mono_time: start_mono_time,
         execution: %Execution{resolvers: resolvers_so_far}
       }
     }} = res
 
-    now = get_time()
-    start_offset = now - start_mono_time
-
+    now = System.monotonic_time()
     resolver = %Resolver{
       path: Absinthe.Resolution.path(res),
-      parent_type: res.parent_type.name,
-      field_name: res.definition.name,
-      return_type: res.definition.schema_node.type,
-      start_offset: start_offset,
+      parentType: res.parent_type.name,
+      fieldName: res.definition.name,
+      returnType: res.definition.schema_node.type,
+      startOffset: now - start_mono_time,
       duration: nil
     }
 
@@ -49,7 +44,7 @@ defmodule ApolloTracing.Middleware do
     }} = res
 
     updated_resolver = %Resolver{resolver |
-      duration: get_time() - start_time
+      duration: System.monotonic_time() - start_time
     }
 
     put_in(res.acc.apollo_tracing.execution.resolvers, [updated_resolver | prev_resolvers])

@@ -47,10 +47,9 @@ defmodule ApolloTracingTest do
   end
 
   test "should have start and end times in tracing", %{result: result} do
-    assert result.extensions.tracing.start_mono_time
-    assert result.extensions.tracing.start_wall_time
-    assert result.extensions.tracing.end_mono_time
-    assert result.extensions.tracing.end_wall_time
+    assert result.extensions.tracing.startTime
+    assert result.extensions.tracing.endTime
+    assert result.extensions.tracing.duration
   end
 
   test "should have 3 resolvers", %{result: result} do
@@ -60,7 +59,7 @@ defmodule ApolloTracingTest do
   test "each resolver should have path, start_offset and duration", %{result: result} do
     for resolver <- result.extensions.tracing.execution.resolvers do
       assert resolver.path
-      assert resolver.start_offset
+      assert resolver.startOffset
       assert resolver.duration
     end
   end
