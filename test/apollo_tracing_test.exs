@@ -7,11 +7,11 @@ defmodule ApolloTracingTest do
 
     object :person do
       field :name, :string
-      field :age, :integer
+      field :age, non_null(:integer)
     end
 
     query do
-      field :get_person, list_of(:person) do
+      field :get_person, list_of(non_null(:person)) do
         resolve fn _, _ ->
           {:ok, [%{name: "sikan", age: 20}]}
         end
@@ -24,7 +24,7 @@ defmodule ApolloTracingTest do
     end
   end
 
-  setup do
+  setup_all do
     pipeline = ApolloTracing.Pipeline.default(TestSchema, [])
 
     result =

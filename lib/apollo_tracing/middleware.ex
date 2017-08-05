@@ -22,7 +22,7 @@ defmodule ApolloTracing.Middleware do
       path: Absinthe.Resolution.path(res),
       parentType: res.parent_type.name,
       fieldName: res.definition.name,
-      returnType: res.definition.schema_node.type,
+      returnType: format_type(res.definition.schema_node.type),
       startOffset: now - start_mono_time,
       duration: nil
     }
@@ -35,6 +35,16 @@ defmodule ApolloTracing.Middleware do
     %{res | middleware:
        res.middleware ++ [{{__MODULE__, :after_field}, [start_time: now]}]
      }
+  end
+
+  defp format_type(type) when is_atom(type) do
+    type |> to_string() |> String.capitalize()
+  end
+  defp format_type(%Absinthe.Type.NonNull{of_type: type}) do
+    format_type(type) <> "!"
+  end
+  defp format_type(%Absinthe.Type.List{of_type: type}) do
+    "[#{format_type(type)}]"
   end
 
   # Called after each resolution to calculate the duration
