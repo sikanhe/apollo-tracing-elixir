@@ -19,7 +19,7 @@ defmodule ApolloTracing.Mixfile do
 
   defp deps do
     [
-      {:absinthe, github: "absinthe-graphql/absinthe"}
+      {:absinthe, "~> 1.4.0-beta.3"}
     ]
   end
 end
