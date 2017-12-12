@@ -15,7 +15,7 @@ Add `:apollo_tracing` to your deps
 ```elixir
 def deps do
   [
-    {:apollo_tracing, "~> 0.1.0"}
+    {:apollo_tracing, "~> 0.2.0"}
   ]
 end
 ```
