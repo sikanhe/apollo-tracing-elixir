@@ -12,9 +12,9 @@ defmodule ApolloTracer.Phase.CreateTracing do
       }
     }
     acc =
-      bp.resolution.acc
+      bp.execution.acc
       |> Map.put(:apollo_tracing, tracing)
       |> Map.put(:apollo_tracing_start_time, System.monotonic_time())
-    {:ok, put_in(bp.resolution.acc, acc)}
+    {:ok, put_in(bp.execution.acc, acc)}
   end
 end

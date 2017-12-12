@@ -20,7 +20,7 @@ defmodule ApolloTracingTest do
 
     def middleware(middleware, field, object) do
       [ApolloTracing.Middleware |
-      Absinthe.Schema.ensure_middleware(middleware, field, object)]
+      Absinthe.Schema.__ensure_middleware__(middleware, field, object)]
     end
   end
 

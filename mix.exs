@@ -30,7 +30,7 @@ defmodule ApolloTracing.Mixfile do
 
   defp deps do
     [
-      {:absinthe, "~> 1.4.0-beta.3"},
+      {:absinthe, "~> 1.4.0"},
       {:ex_doc, ">= 0.0.0", only: :dev}
     ]
   end
