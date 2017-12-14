@@ -11,6 +11,11 @@ defmodule ApolloTracing do
         [ApolloTracing.Middleware |
          Absinthe.Schema.__ensure_middleware__(middleware, field, object)]
       end
+
+      def pipeline(phases) do
+        phases
+        |> ApolloTracing.Pipeline.add_phases()
+      end
     end
   end
 end
