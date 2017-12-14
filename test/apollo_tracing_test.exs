@@ -4,6 +4,7 @@ defmodule ApolloTracingTest do
 
   defmodule TestSchema do
     use Absinthe.Schema
+    use ApolloTracing
 
     object :person do
       field :name, :string
@@ -17,23 +18,15 @@ defmodule ApolloTracingTest do
         end
       end
     end
-
-    def middleware(middleware, field, object) do
-      [ApolloTracing.Middleware |
-      Absinthe.Schema.__ensure_middleware__(middleware, field, object)]
-    end
   end
 
   setup_all do
-    pipeline = ApolloTracing.Pipeline.default(TestSchema, [])
-
-    result =
-    """
+    result = """
       query {
         getPerson { name age }
       }
     """
-    |> Absinthe.Pipeline.run(pipeline)
+    |> Absinthe.run(TestSchema)
     |> case do
       {:ok, %{result: result}, _} -> result
       error -> error
