@@ -1,13 +1,11 @@
 # ApolloTracing (for Elixir)
 
-This package is used to collect and expose trace data in the Apollo Tracing format.
+ApolloTracing adds data to your GraphQL query response so that an Apollo Engine can provide insights into your [Absinthe](http://absinthe-graphql.org)-based GraphQL service.
 
-It relies on instrumenting a GraphQL schema to collect resolver timings, and exposes trace data for an individual request under extensions as part of the GraphQL response.
+## Supported Apollo Features
 
-The extension format is work in progress, and we're collaborating with others in the GraphQL community to make it broadly available, and to build awesome tools on top of it.
-
-One use of Apollo Tracing is to add support for [Apollo Optics](https://www.apollodata.com/optics/) to more GraphQL servers.
-
+- [Performance Tracing](https://www.apollographql.com/docs/engine/performance.html)
+- [Response Caching](https://www.apollographql.com/docs/engine/caching.html)
 
 ## Installation
 
@@ -15,22 +13,18 @@ Add `:apollo_tracing` to your deps
 ```elixir
 def deps do
   [
-    {:apollo_tracing, "~> 0.2.0"}
+    {:apollo_tracing, "~> 0.3.0"}
   ]
 end
 ```
 
 ## Usage
 
-To add tracing to your graphql schema, add ApolloTracing.Middleware as the
-first middleware of your middleware stack:
-```elixir
-def middleware(middlewares, field, object) do
-  [ApolloTracing.Middleware | ...your other middlewares]
-end
-```
+### Register the Middleware
 
-If you have no custom middleware callback, you can simply add `use ApolloTracing` to your schema file:
+*ApolloTracing uses the Absinthe's middleware functionality to track field-level resolution times. In order to register our custom middleware, you have a few options:*
+
+**Add `use ApolloTracing` to your schema file:**
 
 ```elixir
 def MyApp.Schema do
@@ -39,7 +33,16 @@ def MyApp.Schema do
 end
 ```
 
-Note that you don't have to add tracing to all fields in your schema, like we did above. You could selectively add tracing information to the fields of your choice:
+**If you have a custom middleware stack, add `ApolloTracing.Middleware` as the first middleware of your middleware stack:**
+
+```elixir
+def middleware(middleware, _field, _object),
+  do: [ApolloTracing.Middleware | ...your other middlewares]
+
+def middleware(middleware, _field, _object), do: middleware
+```
+
+**If you prefer to only add tracing to some fields, you can selectively add tracing information:**
 
 ```elixir
 field :selected_field, :string do
@@ -48,11 +51,11 @@ field :selected_field, :string do
 end
 ```
 
-After adding the middleware, then you want to  modify Absinthe pipeline to ApolloTracing's custom pipeline before executing queries.
+### Register the Pipeline
 
-## Modifying pipeline with Plug
+*ApolloTracing currently requires you to use a custom Pipeline in order to register 'Phases' in the correct order during resolution. Phases are used for measuring overall query times as well as appending the custom data to the response (including cache hints).*
 
-To add the pipeline to your Absinthe.Plug endpoint, you can simpley use the :pipeline option:
+**Specify the pipeline in your Absinthe.Plug endpoint:**
 
 ```elixir
 forward "/graphql", Absinthe.Plug,
@@ -60,8 +63,7 @@ forward "/graphql", Absinthe.Plug,
   pipeline: {ApolloTracing.Pipeline, :plug}
 ```
 
-If you have your own pipeline function, you can use
-ApolloTracing.Pipeline.add_phases(pipeline) function to added the phases to your pipeline before passing it to Absinthe.Plug.
+**If you have your own pipeline function, you can add the phases directly:**
 
 ```elixir
 def my_pipeline_creator(config, pipeline_opts) do
@@ -72,10 +74,7 @@ def my_pipeline_creator(config, pipeline_opts) do
 end
 ```
 
-### Adding pipeline to `Absinthe.run`
-When you want to just call run a query with tracing, but without going through a Plug endpoint,
-you can build the pipeline with `ApolloTracing.Pipeline.default(schema, opts)`
-and pass that to `Absinthe.Pipeline.run`
+**When you want to just call run a query with tracing, but without going through a Plug endpoint:**
 
 ```elixir
 def custom_absinthe_runner(query, opts \\ []) do
@@ -93,3 +92,30 @@ end
   }
 """
 |> custom_absinthe_runner()
+```
+
+### Add Cache Metadata
+
+**You can configure caching by adding metadata to your Absinthe objects:**
+
+```elixir
+object :user do
+  meta :cache, max_age: 30
+end
+
+# or
+
+object :user, meta: [max_age: 30] do
+  # ...
+end
+```
+
+**To ensure that the object is not cached across users, you can mark it as private:**
+
+```elixir
+object :user do
+  meta :cache, max_age: 30, scope: :private
+end
+```
+
+See the [Apollo docs](https://www.apollographql.com/docs/engine/caching.html#hints-to-schema) for more information about cache scope.

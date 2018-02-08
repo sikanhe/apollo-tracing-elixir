@@ -16,6 +16,7 @@ defmodule ApolloTracing.Middleware do
       fieldName: res.definition.name,
       returnType: Absinthe.Type.name(res.definition.schema_node.type, res.schema),
       startOffset: now - start_mono_time,
+      meta: meta(res),
     }
 
     %{res |
@@ -36,5 +37,11 @@ defmodule ApolloTracing.Middleware do
     } |> Map.from_struct()
 
     update_in(res.acc.apollo_tracing.execution.resolvers, &[updated_resolver | &1])
+  end
+
+  defp meta(res) do
+    res.schema
+    |> Absinthe.Schema.lookup_type(res.definition.schema_node.type)
+    |> Absinthe.Type.meta
   end
 end
