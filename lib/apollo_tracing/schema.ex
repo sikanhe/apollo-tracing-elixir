@@ -29,7 +29,8 @@ defmodule ApolloTracing.Schema do
                  :fieldName,
                  :returnType,
                  :startOffset,
-                 :duration]
+                 :duration,
+                 :meta]
 
       @type path_elem :: String.t | integer
 
@@ -39,7 +40,8 @@ defmodule ApolloTracing.Schema do
         fieldName: String.t,
         returnType: String.t,
         startOffset: pos_integer,
-        duration: pos_integer
+        duration: pos_integer,
+        meta: KeywordList.t,
       }
     end
   end

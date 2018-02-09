@@ -31,6 +31,10 @@ defmodule ApolloTracing.Pipeline do
       Absinthe.Phase.Document.Result,
       ApolloTracer.Phase.AccumulateResult
     )
+    |> Absinthe.Pipeline.insert_before(
+      Absinthe.Phase.Document.Result,
+      ApolloTracer.Phase.AddCacheHints
+    )
     |> Absinthe.Pipeline.insert_after(
       Absinthe.Phase.Document.Result,
       ApolloTracer.Phase.AddExtension
