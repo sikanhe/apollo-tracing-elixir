@@ -1,7 +1,5 @@
-defmodule ApolloTracing.Middleware do
-  @moduledoc """
-  Documentation for ApolloTracing.
-  """
+defmodule ApolloTracing.Middleware.Tracing do
+  @behaviour Absinthe.Middleware
 
   alias ApolloTracing.Schema.Execution.Resolver
   alias Absinthe.Resolution
@@ -10,13 +8,13 @@ defmodule ApolloTracing.Middleware do
   # if there isn't an `ApolloTracing` flag set then we aren't actually doing any tracing
   def call(%Resolution{acc: %{apollo_tracing_start_time: start_mono_time}, state: :unresolved} = res, _config) do
     now = System.monotonic_time()
+
     resolver = %Resolver{
       path: Absinthe.Resolution.path(res),
       parentType: res.parent_type.name,
       fieldName: res.definition.name,
       returnType: Absinthe.Type.name(res.definition.schema_node.type, res.schema),
       startOffset: now - start_mono_time,
-      meta: meta(res),
     }
 
     %{res |
@@ -24,6 +22,7 @@ defmodule ApolloTracing.Middleware do
       middleware: res.middleware ++ [{{__MODULE__, :after_field}, [start_time: now]}]
      }
   end
+
   def call(res, _) do
     res
   end
@@ -37,11 +36,5 @@ defmodule ApolloTracing.Middleware do
     } |> Map.from_struct()
 
     update_in(res.acc.apollo_tracing.execution.resolvers, &[updated_resolver | &1])
-  end
-
-  defp meta(res) do
-    res.schema
-    |> Absinthe.Schema.lookup_type(res.definition.schema_node.type)
-    |> Absinthe.Type.meta
   end
 end

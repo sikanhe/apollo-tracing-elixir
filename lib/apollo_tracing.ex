@@ -7,10 +7,11 @@ defmodule ApolloTracing do
 
   defmacro __using__(_) do
     quote do
-      def middleware(middleware, field, object) do
-        [ApolloTracing.Middleware |
-         Absinthe.Schema.__ensure_middleware__(middleware, field, object)]
-      end
+      def middleware(middleware, _, %{identifier: :subscription}), do: middleware
+      def middleware(middleware, _, %{identifier: :mutation}),
+        do: [ApolloTracing.Middleware.Tracing] ++ middleware
+      def middleware(middleware, _, _),
+        do: [ApolloTracing.Middleware.Tracing, ApolloTracing.Middleware.Caching] ++ middleware
     end
   end
 end
