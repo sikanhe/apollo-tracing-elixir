@@ -20,7 +20,7 @@ end
 
 ## Usage
 
-### Register the Middleware
+### Register the Middlewares
 
 *ApolloTracing uses the Absinthe's middleware functionality to track field-level resolution times. In order to register our custom middleware, you have a few options:*
 
@@ -33,13 +33,11 @@ def MyApp.Schema do
 end
 ```
 
-**If you have a custom middleware stack, add `ApolloTracing.Middleware` as the first middleware of your middleware stack:**
+**If you have a custom middleware stack, add the apollo tracing middlewares to the beginning of your middleware stack:**
 
 ```elixir
 def middleware(middleware, _field, _object),
-  do: [ApolloTracing.Middleware | ...your other middlewares]
-
-def middleware(middleware, _field, _object), do: middleware
+  do: [ApolloTracing.Middleware.Tracing, ApolloTracing.Middleware.Caching] ++ [...your other middlewares]
 ```
 
 **If you prefer to only add tracing to some fields, you can selectively add tracing information:**

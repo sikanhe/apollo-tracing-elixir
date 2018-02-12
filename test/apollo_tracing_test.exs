@@ -83,15 +83,15 @@ defmodule ApolloTracingTest do
     assert result.extensions.cacheControl.version == 1
     assert result.extensions.cacheControl.hints == [
       %{
+        "path": ["getPerson"],
+        "maxAge": 30,
+        "scope": "PRIVATE",
+      },
+      %{
         "path": ["getPerson", "cars"],
         "maxAge": 600,
         "scope": "PUBLIC",
       },
-      %{
-        "path": ["getPerson"],
-        "maxAge": 30,
-        "scope": "PRIVATE",
-      }
     ]
   end
 end
