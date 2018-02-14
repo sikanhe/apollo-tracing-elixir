@@ -1,25 +1,27 @@
 defmodule ApolloTracing.Mixfile do
   use Mix.Project
 
-  @version "0.4.0"
+  @version "0.4.1"
 
   def project do
     [
       app: :apollo_tracing,
       version: @version,
       elixir: "~> 1.5-rc",
-      start_permanent: Mix.env == :prod,
+      start_permanent: Mix.env() == :prod,
       package: package(),
       deps: deps()
     ]
   end
 
   defp package do
-    [description: "Apollo Tracing middleware for Absinthe",
-     files: ["lib", "mix.exs", "README*"],
-     maintainers: ["Sikanhe"],
-     licenses: ["MIT"],
-     links: %{github: "https://github.com/sikanhe/apollo-tracing-elixir"}]
+    [
+      description: "Apollo Tracing middleware for Absinthe",
+      files: ["lib", "mix.exs", "README*"],
+      maintainers: ["Sikanhe"],
+      licenses: ["MIT"],
+      links: %{github: "https://github.com/sikanhe/apollo-tracing-elixir"}
+    ]
   end
 
   def application do
