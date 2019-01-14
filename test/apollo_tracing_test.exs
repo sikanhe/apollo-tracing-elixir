@@ -9,28 +9,30 @@ defmodule ApolloTracingTest do
     object :person do
       meta(:cache, max_age: 30, scope: :private)
 
-      field :name, :string
-      field :age, non_null(:integer)
-      field :cars, list_of(:car)
+      field(:name, :string)
+      field(:age, non_null(:integer))
+      field(:cars, list_of(:car))
     end
 
     object :car do
       meta(:cache, max_age: 600)
 
-      field :make, non_null(:string)
-      field :model, non_null(:string)
+      field(:make, non_null(:string))
+      field(:model, non_null(:string))
     end
 
     query do
       field :get_person, list_of(non_null(:person)) do
-        resolve fn _, _ ->
-          {:ok, [
-            %{
-              name: "sikan", age: 20,
-              cars: [%{make: "Honda", model: "Accord"}]
-            }
-          ]}
-        end
+        resolve(fn _, _ ->
+          {:ok,
+           [
+             %{
+               name: "sikan",
+               age: 20,
+               cars: [%{make: "Honda", model: "Accord"}]
+             }
+           ]}
+        end)
       end
     end
   end
@@ -39,20 +41,20 @@ defmodule ApolloTracingTest do
     pipeline = ApolloTracing.Pipeline.default(TestSchema, [])
 
     result =
-    """
-      query {
-        getPerson {
-          name
-          age
-          cars { make model }
+      """
+        query {
+          getPerson {
+            name
+            age
+            cars { make model }
+          }
         }
-      }
-    """
-    |> Absinthe.Pipeline.run(pipeline)
-    |> case do
-      {:ok, %{result: result}, _} -> result
-      error -> error
-    end
+      """
+      |> Absinthe.Pipeline.run(pipeline)
+      |> case do
+        {:ok, %{result: result}, _} -> result
+        error -> error
+      end
 
     {:ok, %{result: result}}
   end
@@ -68,7 +70,7 @@ defmodule ApolloTracingTest do
   end
 
   test "should have 6 resolvers", %{result: result} do
-    assert (length result.extensions.tracing.execution.resolvers) == 6
+    assert length(result.extensions.tracing.execution.resolvers) == 6
   end
 
   test "each resolver should have path, start_offset and duration", %{result: result} do
@@ -81,17 +83,18 @@ defmodule ApolloTracingTest do
 
   test "includes cache hints", %{result: result} do
     assert result.extensions.cacheControl.version == 1
+
     assert result.extensions.cacheControl.hints == [
-      %{
-        "path": ["getPerson"],
-        "maxAge": 30,
-        "scope": "PRIVATE",
-      },
-      %{
-        "path": ["getPerson", "cars"],
-        "maxAge": 600,
-        "scope": "PUBLIC",
-      },
-    ]
+             %{
+               path: ["getPerson"],
+               maxAge: 30,
+               scope: "PRIVATE"
+             },
+             %{
+               path: ["getPerson", "cars"],
+               maxAge: 600,
+               scope: "PUBLIC"
+             }
+           ]
   end
 end
