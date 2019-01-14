@@ -103,7 +103,7 @@ end
 
 # or
 
-object :user, meta: [max_age: 30] do
+object :user, meta: [cache: [max_age: 30]] do
   # ...
 end
 ```
