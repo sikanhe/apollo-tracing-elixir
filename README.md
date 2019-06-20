@@ -4,8 +4,8 @@ ApolloTracing adds data to your GraphQL query response so that an Apollo Engine 
 
 ## Supported Apollo Features
 
-- [Performance Tracing](https://www.apollographql.com/docs/engine/performance.html)
-- [Response Caching](https://www.apollographql.com/docs/engine/caching.html)
+- [Performance Tracing](https://www.apollographql.com/docs/platform/performance/#traces)
+- [Response Caching](https://www.apollographql.com/docs/references/engine-proxy/#2-add-cache-hints-to-your-responses)
 
 ## Installation
 
@@ -116,4 +116,4 @@ object :user do
 end
 ```
 
-See the [Apollo docs](https://www.apollographql.com/docs/engine/caching.html#hints-to-schema) for more information about cache scope.
+See the [Apollo docs](https://www.apollographql.com/docs/apollo-server/features/caching/#defining-cache-hints) for more information about cache scope.
