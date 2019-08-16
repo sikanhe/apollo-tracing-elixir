@@ -2,6 +2,7 @@ defmodule ApolloTracing.Schema do
   @moduledoc """
   Tracing Schema
   """
+  @derive Jason.Encoder
   defstruct [:version,
              :startTime,
              :endTime,
@@ -17,6 +18,7 @@ defmodule ApolloTracing.Schema do
   }
 
   defmodule Execution do
+    @derive Jason.Encoder
     defstruct [:resolvers]
 
     @type t :: %__MODULE__{
@@ -24,6 +26,7 @@ defmodule ApolloTracing.Schema do
     }
 
     defmodule Resolver do
+      @derive Jason.Encoder
       defstruct [:path,
                  :parentType,
                  :fieldName,
